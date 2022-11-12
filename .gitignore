@@ -1,0 +1,5 @@
+/.idea/
+*.iml
+.vagrant
+/ansible/vagrant
+/ansible/vagrant.pub

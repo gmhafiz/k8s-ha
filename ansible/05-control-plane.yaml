@@ -1,0 +1,135 @@
+---
+- hosts: control1
+  become: yes
+  tasks:
+    - name: initialize the cluster
+      shell: kubeadm init --control-plane-endpoint="{{ IP_HOST_CP1 }}:{{ K8S_API_SERVER_PORT }}" --upload-certs --pod-network-cidr=192.168.0.0/16
+      register: cluster_initialized
+#      args:
+#        chdir: $HOME
+#        creates: cluster_initialized.txt
+
+    - debug: msg="{{ cluster_initialized.stdout }}"
+    - debug: msg="{{ IP_HOST_CP1 }}"
+    - debug: msg="{{ K8S_API_SERVER_PORT }}"
+
+#    - name: install kube-proxy
+#      shell:  kubeadm init phase addon kube-proxy --apiserver-advertise-address={{ IP_HOST_CP1 }} --control-plane-endpoint="{{ VIRTUAL_IP }}:6443" --pod-network-cidr=192.168.0.0/16
+
+# kubeadm init phase addon kube-proxy \
+    #  --control-plane-endpoint="<ha-controlplane-loadbalancer>:6443" \
+    #  --pod-network-cidr="<put your cidr here>"
+# --apiserver-advertise-address={{ IP_HOST_CP1 }}
+# --v=5
+# --skip-phases=addon/kube-proxy
+# --ignore-preflight-errors=all
+
+    - name: create .kube directory
+      become: yes
+      become_user: vagrant
+      file:
+        path: /home/vagrant/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+        owner: vagrant
+
+    - name: create .kube directory
+      become: yes
+      become_user: kubeadmin
+      file:
+        path: /home/kubeadmin/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/kubeadmin/.kube/config
+        remote_src: yes
+        owner: kubeadmin
+
+    - name: get join command
+      shell: kubeadm token create --print-join-command
+      register: join_command_raw
+
+    - name: set join command
+      set_fact:
+        join_command: "{{ join_command_raw.stdout_lines[0] }}"
+
+    - name: get cert
+      shell: kubeadm init phase upload-certs --upload-certs
+      register: get_cert_raw
+
+    - name: set cert
+      set_fact:
+        cert_command: "{{ get_cert_raw.stdout_lines[2] }}"
+
+    - name: install Pod network
+      become: yes
+      shell: kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/calico.yaml
+      args:
+        chdir: $HOME
+        creates: pod_network_setup.txt
+
+#    - name: install Pod network
+#      become: yes
+#      shell: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+#      args:
+#        chdir: $HOME
+#        creates: pod_network_setup.txt
+
+
+- hosts: control2,control3
+  become: yes
+  tasks:
+    #- debug: msg="{{ hostvars['control1'].join_command }}"
+    - debug: msg="{{ hostvars['control1'].cert_command }}"
+
+    - name: join control-plane
+      shell: "{{ hostvars['control1'].join_command }} --control-plane --certificate-key={{ hostvars['control1'].cert_command }} >> node_joined.txt"
+      register: node_joined
+#      args:
+#        chdir: $HOME
+#        creates: node_joined.txt
+
+
+
+- hosts: control_plane
+  become: yes
+  tasks:
+    - name: create .kube directory
+      become: yes
+      become_user: vagrant
+      file:
+        path: /home/vagrant/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+        owner: vagrant
+
+    - name: create .kube directory
+      become: yes
+      become_user: kubeadmin
+      file:
+        path: /home/kubeadmin/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/kubeadmin/.kube/config
+        remote_src: yes
+        owner: vagrant
+

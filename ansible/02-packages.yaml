@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: packages
+      apt:
+        name:
+          - apt-transport-https
+        state: present
+        update_cache: true
+
+- hosts: control_plane
+  become: yes
+  tasks:
+    - name: packages
+      apt:
+        name:
+          - keepalived
+          - haproxy
+        state: present
+        update_cache: true

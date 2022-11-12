@@ -1,0 +1,19 @@
+[load_balancer]
+#lb1 ansible_host=172.17.17.51 new_hostname=loadbalancer1
+#lb2 ansible_host=172.17.17.52 new_hostname=loadbalancer2
+
+
+[control_plane]
+control1 ansible_host=172.17.17.101 new_hostname=kcontrolplane1
+control2 ansible_host=172.17.17.102 new_hostname=kcontrolplane2
+control3 ansible_host=172.17.17.103 new_hostname=kcontrolplane3
+
+
+[workers]
+worker1 ansible_host=172.17.17.201 new_hostname=kworker1
+worker2 ansible_host=172.17.17.202 new_hostname=kworker2
+worker3 ansible_host=172.17.17.203 new_hostname=kworker3
+
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3

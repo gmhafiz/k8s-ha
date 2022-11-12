@@ -75,9 +75,6 @@
         name: kubeadm={{ K8S_VERSION }}
         state: present
 
-    - name: Hold versions
-      shell: apt-mark hold kubelet kubeadm
-
     - name: install kubectl
       apt:
         name: kubectl={{ K8S_VERSION }}

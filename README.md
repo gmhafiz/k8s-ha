@@ -5,20 +5,22 @@ control planes and 3 worker nodes on Ubuntu 22.04 machines. Heavily adapted from
 https://youtu.be/c1SCdv2hYDc 
 
 ## Vagrant Environment
-| Role          | Host Name      | IP            | OS           | RAM | CPU |
-|---------------|----------------|---------------|--------------|-----|-----|
-| Control Plane | kcontrolplane1 | 172.17.17.101 | Ubuntu 22.04 | 2G  | 2   |
-| Control Plane | kcontrolplane2 | 172.17.17.102 | Ubuntu 22.04 | 2G  | 2   |
-| Control Plane | kcontrolplane3 | 172.17.17.103 | Ubuntu 22.04 | 2G  | 2   |
-| Worker        | kworker1       | 172.17.17.201 | Ubuntu 22.04 | 2G  | 2   |
-| Worker        | kworker2       | 172.17.17.202 | Ubuntu 22.04 | 2G  | 2   |
-| Worker        | kworker3       | 172.17.17.203 | Ubuntu 22.04 | 2G  | 2   |
+| Role          | Host Name      | IP            | OS           | RAM   | CPU |
+|---------------|----------------|---------------|--------------|-------|-----|
+| Load Balancer | loadbalancer1  | 172.17.17.51  | Ubuntu 20.04 | 512MB | 1   |
+| Load Balancer | loadbalancer1  | 172.17.17.52  | Ubuntu 20.04 | 512MB | 1   |
+| Control Plane | kcontrolplane1 | 172.17.17.101 | Ubuntu 20.04 | 2G    | 2   |
+| Control Plane | kcontrolplane2 | 172.17.17.102 | Ubuntu 20.04 | 2G    | 2   |
+| Control Plane | kcontrolplane3 | 172.17.17.103 | Ubuntu 20.04 | 2G    | 2   |
+| Worker        | kworker1       | 172.17.17.201 | Ubuntu 20.04 | 2G    | 2   |
+| Worker        | kworker2       | 172.17.17.202 | Ubuntu 20.04 | 2G    | 2   |
+| Worker        | kworker3       | 172.17.17.203 | Ubuntu 20.04 | 2G    | 2   |
 
 
 Host Machine Requirements
 
- - 12 cores
- - 12G memory
+ - 14 cores
+ - 13G memory
  - CPU can host hardware accelerated KVM virtual machines.
 
 Note that vagrant creates the IP address we are concerned with at `eth1`.
@@ -79,6 +81,8 @@ up.
 
 ```sh
 {
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.51
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.52
     ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.101
     ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.102
     ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.103

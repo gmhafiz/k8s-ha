@@ -9,7 +9,7 @@
         state: present
         update_cache: true
 
-- hosts: control_plane
+- hosts: load_balancer
   become: yes
   tasks:
     - name: packages

@@ -4,10 +4,10 @@
 # ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 # ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 
-# VAGRANT_BOX               = "generic/ubuntu2004"
-# VAGRANT_BOX_VERSION       = "3.3.0"
-VAGRANT_BOX               = "generic/ubuntu2204"
-VAGRANT_BOX_VERSION       = "4.0.2"
+VAGRANT_BOX               = "generic/ubuntu2004"
+VAGRANT_BOX_VERSION       = "3.3.0"
+# VAGRANT_BOX               = "generic/ubuntu2204"
+# VAGRANT_BOX_VERSION       = "4.0.2"
 # VAGRANT_BOX_VERSION       = "4.2.0"
 CPUS_LB_NODE              = 1
 CPUS_CONTROL_PLANE_NODE   = 2
@@ -19,7 +19,7 @@ DISK_LB_NODE              = '1GB'
 DISK_CONTROL_PLANE_NODE   = '20GB'
 DISK_WORKER_NODE          = '150GB'
 
-LOAD_BALANCER_COUNT = 0
+LOAD_BALANCER_COUNT = 2
 CONTROL_PLANE_COUNT = 3
 WORKER_COUNT        = 3
 

@@ -1,5 +1,5 @@
 {
-    "K8S_VERSION": "1.25.3-00",
+    "K8S_VERSION": "1.22.0-00",
     "K8S_API_SERVER_PORT": 6443,
     "VIRTUAL_IP": "172.17.17.100",
     "VIRTUAL_IP_PORT": 8443,

@@ -1,6 +1,6 @@
 [load_balancer]
-#lb1 ansible_host=172.17.17.51 new_hostname=loadbalancer1
-#lb2 ansible_host=172.17.17.52 new_hostname=loadbalancer2
+lb1 ansible_host=172.17.17.51 new_hostname=loadbalancer1
+lb2 ansible_host=172.17.17.52 new_hostname=loadbalancer2
 
 
 [control_plane]

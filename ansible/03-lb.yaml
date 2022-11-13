@@ -70,7 +70,7 @@
                   auth_pass mysecret
               }
               virtual_ipaddress {
-                  172.17.17.100
+                  172.16.16.100
               }
               track_script {
                   check_apiserver
@@ -104,7 +104,7 @@
                   auth_pass mysecret
               }
               virtual_ipaddress {
-                  172.17.17.100
+                  172.16.16.100
               }
               track_script {
                   check_apiserver

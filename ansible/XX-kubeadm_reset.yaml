@@ -2,6 +2,6 @@
 - hosts: control_plane
   become: yes
   tasks:
-    - name: initialize the cluster
-      shell: kubeadm reset  --force && rm -rf .kube/ && rm -rf /etc/kubernetes/ && rm -rf /var/lib/kubelet/ && rm -rf /var/lib/etcd
+    - name: reset the cluster
+      shell: kubeadm reset --force && rm -rf .kube/ && rm -rf /etc/kubernetes/ && rm -rf /var/lib/kubelet/ && rm -rf /var/lib/etcd && sudo iptables -F && sudo iptables -t nat -F && sudo iptables -t mangle -F && sudo iptables -X
       ignore_errors: True

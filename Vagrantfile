@@ -21,7 +21,7 @@ DISK_WORKER_NODE          = '150GB'
 
 LOAD_BALANCER_COUNT = 2
 CONTROL_PLANE_COUNT = 3
-WORKER_COUNT        = 3
+WORKER_COUNT        = 1
 
 Vagrant.configure(2) do |config|
 
@@ -34,15 +34,15 @@ Vagrant.configure(2) do |config|
       lb.vm.box               = VAGRANT_BOX
       lb.vm.box_check_update  = false
       lb.vm.box_version       = VAGRANT_BOX_VERSION
-      lb.vm.hostname          = "loadbalancer#{i}"
+      lb.vm.hostname          = "loadbalancer#{i}.example.com"
       # lb.disksize.size        = DISK_LB_NODE
 
-      lb.vm.network "private_network", ip: "172.17.17.5#{i}"
+      lb.vm.network "private_network", ip: "172.16.16.5#{i}"
 
       ssh_pub_key = File.readlines("./ansible/vagrant.pub").first.strip
       config.vm.provision 'shell', inline: 'mkdir -p /root/.ssh'
       config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /root/.ssh/authorized_keys"
-      # config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys", privileged: false
+      config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys", privileged: false
 
       lb.vm.provider :libvirt do |v|
         v.memory  = MEMORY_LB_NODE
@@ -66,15 +66,15 @@ Vagrant.configure(2) do |config|
       cpnode.vm.box               = VAGRANT_BOX
       cpnode.vm.box_check_update  = false
       cpnode.vm.box_version       = VAGRANT_BOX_VERSION
-      cpnode.vm.hostname          = "kcontrolplane#{i}"
+      cpnode.vm.hostname          = "kcontrolplane#{i}.example.com"
       # cpnode.disksize.size        = DISK_CONTROL_PLANE_NODE
 
-      cpnode.vm.network "private_network", ip: "172.17.17.10#{i}"
+      cpnode.vm.network "private_network", ip: "172.16.16.10#{i}"
 
       ssh_pub_key = File.readlines("./ansible/vagrant.pub").first.strip
       config.vm.provision 'shell', inline: 'mkdir -p /root/.ssh'
       config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /root/.ssh/authorized_keys"
-      # config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys", privileged: false
+      config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys", privileged: false
 
       cpnode.vm.provider :libvirt do |v|
         v.nested  = true
@@ -99,15 +99,15 @@ Vagrant.configure(2) do |config|
       workernode.vm.box               = VAGRANT_BOX
       workernode.vm.box_check_update  = false
       workernode.vm.box_version       = VAGRANT_BOX_VERSION
-      workernode.vm.hostname          = "kworker#{i}"
+      workernode.vm.hostname          = "kworker#{i}.example.com"
       # workernode.disksize.size        = DISK_WORKER_NODE
 
-      workernode.vm.network "private_network", ip: "172.17.17.20#{i}"
+      workernode.vm.network "private_network", ip: "172.16.16.20#{i}"
 
       ssh_pub_key = File.readlines("./ansible/vagrant.pub").first.strip
       config.vm.provision 'shell', inline: 'mkdir -p /root/.ssh'
       config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /root/.ssh/authorized_keys"
-      # config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys", privileged: false
+      config.vm.provision 'shell', inline: "echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys", privileged: false
 
       workernode.vm.provider :libvirt do |v|
         v.nested  = true

@@ -3,26 +3,12 @@
   become: yes
   tasks:
     - name: initialize the cluster
-      shell: kubeadm init --control-plane-endpoint="{{ IP_HOST_CP1 }}:{{ K8S_API_SERVER_PORT }}" --upload-certs --pod-network-cidr=192.168.0.0/16
+      shell: kubeadm init --control-plane-endpoint="{{ VIRTUAL_IP }}:{{ K8S_API_SERVER_PORT }}" --upload-certs --apiserver-advertise-address=172.16.16.101 --pod-network-cidr=192.168.0.0/16
       register: cluster_initialized
-#      args:
-#        chdir: $HOME
-#        creates: cluster_initialized.txt
 
     - debug: msg="{{ cluster_initialized.stdout }}"
     - debug: msg="{{ IP_HOST_CP1 }}"
     - debug: msg="{{ K8S_API_SERVER_PORT }}"
-
-#    - name: install kube-proxy
-#      shell:  kubeadm init phase addon kube-proxy --apiserver-advertise-address={{ IP_HOST_CP1 }} --control-plane-endpoint="{{ VIRTUAL_IP }}:6443" --pod-network-cidr=192.168.0.0/16
-
-# kubeadm init phase addon kube-proxy \
-    #  --control-plane-endpoint="<ha-controlplane-loadbalancer>:6443" \
-    #  --pod-network-cidr="<put your cidr here>"
-# --apiserver-advertise-address={{ IP_HOST_CP1 }}
-# --v=5
-# --skip-phases=addon/kube-proxy
-# --ignore-preflight-errors=all
 
     - name: create .kube directory
       become: yes
@@ -77,28 +63,15 @@
         chdir: $HOME
         creates: pod_network_setup.txt
 
-#    - name: install Pod network
-#      become: yes
-#      shell: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-#      args:
-#        chdir: $HOME
-#        creates: pod_network_setup.txt
-
-
 - hosts: control2,control3
   become: yes
   tasks:
-    #- debug: msg="{{ hostvars['control1'].join_command }}"
     - debug: msg="{{ hostvars['control1'].cert_command }}"
+    - debug: var="{{ ansible_eth1.ipv4.address }}"
 
     - name: join control-plane
-      shell: "{{ hostvars['control1'].join_command }} --control-plane --certificate-key={{ hostvars['control1'].cert_command }} >> node_joined.txt"
+      shell: "{{ hostvars['control1'].join_command }} --control-plane --certificate-key={{ hostvars['control1'].cert_command }} --apiserver-advertise-address={{ ansible_eth1.ipv4.address|default(ansible_all_ipv4_addresses[0]) }} >> node_joined.txt"
       register: node_joined
-#      args:
-#        chdir: $HOME
-#        creates: node_joined.txt
-
-
 
 - hosts: control_plane
   become: yes

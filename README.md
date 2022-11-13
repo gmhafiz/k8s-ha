@@ -7,14 +7,14 @@ https://youtu.be/c1SCdv2hYDc
 ## Vagrant Environment
 | Role          | Host Name      | IP            | OS           | RAM   | CPU |
 |---------------|----------------|---------------|--------------|-------|-----|
-| Load Balancer | loadbalancer1  | 172.17.17.51  | Ubuntu 20.04 | 512MB | 1   |
-| Load Balancer | loadbalancer1  | 172.17.17.52  | Ubuntu 20.04 | 512MB | 1   |
-| Control Plane | kcontrolplane1 | 172.17.17.101 | Ubuntu 20.04 | 2G    | 2   |
-| Control Plane | kcontrolplane2 | 172.17.17.102 | Ubuntu 20.04 | 2G    | 2   |
-| Control Plane | kcontrolplane3 | 172.17.17.103 | Ubuntu 20.04 | 2G    | 2   |
-| Worker        | kworker1       | 172.17.17.201 | Ubuntu 20.04 | 2G    | 2   |
-| Worker        | kworker2       | 172.17.17.202 | Ubuntu 20.04 | 2G    | 2   |
-| Worker        | kworker3       | 172.17.17.203 | Ubuntu 20.04 | 2G    | 2   |
+| Load Balancer | loadbalancer1  | 172.16.16.51  | Ubuntu 20.04 | 512MB | 1   |
+| Load Balancer | loadbalancer1  | 172.16.16.52  | Ubuntu 20.04 | 512MB | 1   |
+| Control Plane | kcontrolplane1 | 172.16.16.101 | Ubuntu 20.04 | 2G    | 2   |
+| Control Plane | kcontrolplane2 | 172.16.16.102 | Ubuntu 20.04 | 2G    | 2   |
+| Control Plane | kcontrolplane3 | 172.16.16.103 | Ubuntu 20.04 | 2G    | 2   |
+| Worker        | kworker1       | 172.16.16.201 | Ubuntu 20.04 | 2G    | 2   |
+| Worker        | kworker2       | 172.16.16.202 | Ubuntu 20.04 | 2G    | 2   |
+| Worker        | kworker3       | 172.16.16.203 | Ubuntu 20.04 | 2G    | 2   |
 
 
 Host Machine Requirements
@@ -61,9 +61,11 @@ modify the `Vagrantfile` file `ssh_pub_key = File.readlines("./ansible/vagrant.p
 to point into your `~/.ssh/id_rsa.pub`, or create a new one:
 
 ```sh
+cd ansible
 ssh-keygen -t rsa -b 4096 -f vagrant
 chmod 600 vagrant
 chmod 644 vagrant.pub
+cd ..
 ```
 
 
@@ -81,14 +83,14 @@ up.
 
 ```sh
 {
-    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.51
-    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.52
-    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.101
-    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.102
-    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.103
-    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.201
-    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.202
-    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.17.17.203
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.16.16.51
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.16.16.52
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.16.16.101
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.16.16.102
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.16.16.103
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.16.16.201
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.16.16.202
+    ssh-keygen -f $HOME/.ssh/known_hosts -R 172.16.16.203
 }
 ```
 
@@ -119,8 +121,8 @@ ansible-playbook -i hosts -u root --key-file "vagrant" 07-k8s-config.yaml
 Once step 1 is completed, may ssh into each server with either commands
 
 ```sh
-ssh -i ./vagrant vagrant@172.17.17.101 # If you use the newly generated public-private key pair
-ssh kubeadmin@172.17.17.101            # If using existing ~/.ssh/id_rsa.pub key
+ssh -i ./vagrant vagrant@172.16.16.101 # If you use the newly generated public-private key pair
+ssh kubeadmin@172.16.16.101            # If using existing ~/.ssh/id_rsa.pub key
 ```
 
 If the step 5, initialization of k8s cluster fails, reset with this playbook and re-run 
@@ -151,12 +153,12 @@ Cluster is ready when all status is `Ready`
 ```
 $ kubectl get no
 NAME             STATUS   ROLES           AGE     VERSION
-kcontrolplane1   Ready    control-plane   11m     v1.25.3
-kcontrolplane2   Ready    control-plane   39s     v1.25.3
-kcontrolplane3   Ready    control-plane   8m50s   v1.25.3
-kworker1         Ready    <none>          7m51s   v1.25.3
-kworker2         Ready    <none>          7m51s   v1.25.3
-kworker3         Ready    <none>          7m51s   v1.25.3
+kcontrolplane1   Ready    control-plane   11m     v1.25.4
+kcontrolplane2   Ready    control-plane   39s     v1.25.4
+kcontrolplane3   Ready    control-plane   8m50s   v1.25.4
+kworker1         Ready    <none>          7m51s   v1.25.4
+kworker2         Ready    <none>          7m51s   v1.25.4
+kworker3         Ready    <none>          7m51s   v1.25.4
 ```
 
 # Deploy Container
@@ -178,7 +180,7 @@ kubectl get po -o wide
 Port forward 80 to 8070 of that pod
 
 ```sh
-kubectl port-forward nginx-deployment-<REPLACE-ME> 8070:80
+kubectl port-forward <REPLACE-POD-NAME> 8070:80
 ```
 
 Access localhost:8070 in the browser.
@@ -188,7 +190,8 @@ Access localhost:8070 in the browser.
 # TODO
 
  - [x] Multi control plane kubernetes cluster
- - [ ] High Available (HA) cluster
+ - [x] High Available (HA) cluster
+ - [ ] Ingress controller
 
 
 # Reference

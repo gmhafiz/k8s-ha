@@ -18,15 +18,27 @@
               curl --silent --max-time 2 --insecure https://{{ VIRTUAL_IP }}:{{ K8S_API_SERVER_PORT }}/ -o /dev/null || errorExit "Error GET https://{{ VIRTUAL_IP }}:{{ K8S_API_SERVER_PORT }}/"
           fi
 
-    - name: apply bridge network
+    - name: make script executable
       become: yes
       shell: chmod +x /etc/keepalived/check_apiserver.sh
-
 
     - name: haproxy
       copy:
         dest: "/etc/haproxy/haproxy.cfg"
         content: |
+          global
+            maxconn 50000
+            log /dev/log local0
+            user haproxy
+            group haproxy
+           stats socket /var/lib/haproxy/stats
+          
+          defaults
+            log global
+            timeout connect 10s
+            timeout client 30s
+            timeout server 30s
+
           frontend kubernetes-frontend
             bind *:6443
             mode tcp
@@ -60,14 +72,14 @@
           }
           
           vrrp_instance VI_1 {
-              state BACKUP
+              state MASTER
               interface eth1
               virtual_router_id 1
-              priority 100
+              priority 101
               advert_int 5
               authentication {
                   auth_type PASS
-                  auth_pass mysecret
+                  auth_pass {{ PASSWORD_KEEPALIVED }}
               }
               virtual_ipaddress {
                   172.16.16.100
@@ -90,9 +102,9 @@
             timeout 10
             fall 5
             rise 2
-            weight -2
+            weight 2
           }
-          
+
           vrrp_instance VI_1 {
               state BACKUP
               interface eth1
@@ -101,7 +113,7 @@
               advert_int 5
               authentication {
                   auth_type PASS
-                  auth_pass mysecret
+                  auth_pass {{ PASSWORD_KEEPALIVED }}
               }
               virtual_ipaddress {
                   172.16.16.100

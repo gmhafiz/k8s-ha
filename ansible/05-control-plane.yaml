@@ -2,7 +2,7 @@
 - hosts: control1
   become: yes
   tasks:
-    - name: initialize the cluster
+    - name: initialise the cluster
       shell: kubeadm init --control-plane-endpoint="{{ VIRTUAL_IP }}:{{ K8S_API_SERVER_PORT }}" --upload-certs --apiserver-advertise-address=172.16.16.101 --pod-network-cidr=192.168.0.0/16
       register: cluster_initialized
 
@@ -56,7 +56,7 @@
       set_fact:
         cert_command: "{{ get_cert_raw.stdout_lines[2] }}"
 
-    - name: install Pod network
+    - name: install Pod network (CNI)
       become: yes
       shell: kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/calico.yaml
       args:
@@ -105,4 +105,3 @@
         dest: /home/kubeadmin/.kube/config
         remote_src: yes
         owner: vagrant
-

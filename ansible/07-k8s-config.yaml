@@ -14,4 +14,3 @@
 
     - name: Copy config file to host (3/3)
       shell: rm /etc/kubernetes/config
-

@@ -1,6 +1,6 @@
 - import_playbook: 01-initial.yaml
 - import_playbook: 02-packages.yaml
-#- import_playbook: 03-lb.yaml
+- import_playbook: 03-lb.yaml
 - import_playbook: 04-k8s.yaml
 - import_playbook: 05-control-plane.yaml
 - import_playbook: 06-worker.yaml

@@ -14,7 +14,9 @@ IP_HOST_W1: 172.16.16.201
 POD_CIDR_FLANNEL: 10.244.0.0/16
 POD_CIDR_CALICO: 192.168.0.0/16
 
-PASSWORD_KUBEADMIN: "kubeadmin"                                  # openssl rand -base64 32
+# Generate random string with:
+#     openssl rand -base64 32
+PASSWORD_KUBEADMIN: "kubeadmin"
 PASSWORD_KEEPALIVED: "fW/19P0JzwNqIveyXfnhLXswVBUSFF4d3oMyVSi3g/U="
 
 OS: "Debian" # Debian / Ubuntu

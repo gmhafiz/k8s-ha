@@ -13,8 +13,13 @@
         replace: '# \1'
 
     - name: Disable firewall
+      when: ansible_facts['os_family'] == "Debian"
       shell: |
-        systemctl disable --now ufw >/dev/null 2>&1    
+        STATUS="$(systemctl is-active ufw.service)"
+        if [ "${STATUS}" = "active" ]; then
+          systemctl stop --now ufw >/dev/null 2>&1
+          systemctl disable --now ufw >/dev/null 2>&1
+        fi
 
     - name: bridge network
       copy:
@@ -23,7 +28,7 @@
           overlay
           br_netfilter
 
-    - name: bridge network
+    - name: forward ipv4 traffic
       copy:
         dest: "/etc/sysctl.d/kubernetes.conf"
         content: |
@@ -42,16 +47,32 @@
         state: present
         update_cache: true
 
-    - name: Tell k8s to use systemd
+    - name: Tell Ubuntu to use systemd
+      when: ansible_facts['distribution'] == "Ubuntu"
       shell: |
         mkdir -p /etc/containerd && \
         containerd config default > /etc/containerd/config.toml && \
         sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 
+    - name: Tell Debian to use systemd
+      when: ansible_facts['distribution'] == "Debian"
+      shell: |
+        mkdir -p /etc/containerd
+        containerd config default > /etc/containerd/config.toml
+        sed -i 's/\[plugins\.\"io\.containerd\.grpc\.v1\.cri\"\.containerd\.runtimes\.runc\.options\]/\[plugins\.\"io\.containerd\.grpc\.v1\.cri\"\.containerd\.runtimes\.runc\.options\]\\n\\t\\tSystemdCgroup \= true/g' /etc/containerd/config.toml
+
     - name: containerd services
       ansible.builtin.systemd:
         state: restarted
         name: containerd
+
+#    - name: For releases older than Debian 12 and Ubuntu 22.04
+#      become: yes
+#      become_user: vagrant
+#      file:
+#        path: /etc/apt/keyrings
+#        state: directory
+#        mode: 0755
 
     - name: add Kubernetes apt-key
       apt_key:
@@ -64,6 +85,11 @@
         state: present
         filename: 'kubernetes'
 
+    - name: update repo
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+    - debug: msg={{ K8S_VERSION }}
+
     - name: install kubelet
       apt:
         name: kubelet={{ K8S_VERSION }}
@@ -74,15 +100,16 @@
       apt:
         name: kubeadm={{ K8S_VERSION }}
         state: present
+        update_cache: true
 
     - name: install kubectl
       apt:
         name: kubectl={{ K8S_VERSION }}
         state: present
-        force: yes
+        update_cache: true
 
     - name: Hold versions
-      shell: apt-mark hold kubectl
+      shell: apt-mark hold kubelet={{ K8S_VERSION }} kubeadm={{ K8S_VERSION }} kubectl={{ K8S_VERSION }}
 
 #- hosts: control_plane
 #  become: yes

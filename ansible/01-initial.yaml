@@ -3,15 +3,28 @@
   become: yes
   tasks:
     - name: create a user
-      user: name=kubeadmin append=yes state=present createhome=yes shell=/bin/bash
-
-    - name: allow 'kubeadmin' to have passwordless sudo
-      lineinfile:
-        dest: /etc/sudoers
-        line: 'kubeadmin ALL=(ALL) NOPASSWD: ALL'
-        validate: 'visudo -cf %s'
+      user: name=kubeadmin append=yes state=present groups=sudo createhome=yes shell=/bin/bash  password={{ PASSWORD_KUBEADMIN | password_hash('sha512') }}
 
     - name: set up authorized keys for the user
       authorized_key: user=kubeadmin key="{{item}}"
       with_file:
         - ~/.ssh/id_rsa.pub
+
+
+- hosts: control_plane
+  become: yes
+  tasks:
+    - name: Add kubectl alias for user
+      lineinfile:
+        path=/home/kubeadmin/.bashrc
+        line="alias k='kubectl'"
+        owner=kubeadmin
+        regexp='^alias k='kubectl'$'
+        state=present
+        insertafter=EOF
+        create=True
+
+    - name: Source .bashrc
+      shell: "source /home/kubeadmin/.bashrc"
+      args:
+        executable: /bin/bash

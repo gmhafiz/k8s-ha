@@ -4,11 +4,12 @@
 # ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 # ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 
-VAGRANT_BOX               = "generic/ubuntu2004"
-VAGRANT_BOX_VERSION       = "3.3.0"
-# VAGRANT_BOX               = "generic/ubuntu2204"
-# VAGRANT_BOX_VERSION       = "4.0.2"
-# VAGRANT_BOX_VERSION       = "4.2.0"
+VAGRANT_BOX               = "debian/bullseye64"
+VAGRANT_BOX_VERSION       = "11.20220912.1"
+# VAGRANT_BOX               = "generic/ubuntu2004"
+# VAGRANT_BOX_VERSION       = "3.3.0"
+# VAGRANT_BOX               = "generic/ubuntu2204" # doesn't seem to work
+# VAGRANT_BOX_VERSION       = "4.2.6"
 CPUS_LB_NODE              = 1
 CPUS_CONTROL_PLANE_NODE   = 2
 CPUS_WORKER_NODE          = 2
@@ -21,11 +22,19 @@ DISK_WORKER_NODE          = '150GB'
 
 LOAD_BALANCER_COUNT = 2
 CONTROL_PLANE_COUNT = 3
-WORKER_COUNT        = 1
+WORKER_COUNT        = 3
 
 Vagrant.configure(2) do |config|
 
   config.vm.provision "shell", path: "bootstrap.sh"
+
+  # Forwards internal k8s port to local machine
+  # https://developer.hashicorp.com/vagrant/docs/networking/forwarded_ports
+  # config.vm.network "forwarded_port", guest: 6443, host: 6443, host_ip: "0.0.0.0"
+
+  if VAGRANT_BOX["debian"]
+    config.vm.synced_folder ".", "/vagrant", type: "rsync" # Required for debian https://wiki.debian.org/Vagrant#Failure_to_start_on_NFS. Use rsync instead of nfsd.
+  end
 
   (1..LOAD_BALANCER_COUNT).each do |i|
 

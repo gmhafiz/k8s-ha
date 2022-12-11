@@ -1,6 +1,6 @@
 # Introduction
 
-Create a highly available kubernetes cluster v1.25 using `kubeadm`, `libvirt`,  `ansible`,
+Create a highly available kubernetes cluster v1.26 using `kubeadm`, `libvirt`,  `ansible`,
 `containerd`, `calico`, VMs deployed by vagrant with 1 virtual IP, 2 load balancers, 3 
 control planes and 3 worker nodes on Debian Bullseye 11. Heavily adapted from 
 https://youtu.be/c1SCdv2hYDc 
@@ -153,10 +153,22 @@ from step 5 onwards.
 ansible-playbook -u root --key-file "vagrant" XX-kubeadm_reset.yaml
 ```
 
-
 If everything is successful, check if it is working from the host machine. The 
 final playbook copies `/etc/kubernetes/admin.conf` into your `~/.kube/config` to 
-allow you to manage from the host.
+allow you to manage from the host. But to use `kubectl` command, we need to
+install it on local machine:
+
+```sh
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl
+sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubectl
+sudo apt-mark hold kubectl
+```
+
+then,
 
 ```sh
 kubectl cluster-info
@@ -174,12 +186,12 @@ Cluster is ready when all status is `Ready`
 ```
 $ kubectl get no
 NAME             STATUS   ROLES           AGE     VERSION
-kcontrolplane1   Ready    control-plane   11m     v1.25.4
-kcontrolplane2   Ready    control-plane   39s     v1.25.4
-kcontrolplane3   Ready    control-plane   8m50s   v1.25.4
-kworker1         Ready    <none>          7m51s   v1.25.4
-kworker2         Ready    <none>          7m51s   v1.25.4
-kworker3         Ready    <none>          7m51s   v1.25.4
+kcontrolplane1   Ready    control-plane   11m     v1.26.0
+kcontrolplane2   Ready    control-plane   39s     v1.26.0
+kcontrolplane3   Ready    control-plane   8m50s   v1.26.0
+kworker1         Ready    <none>          7m51s   v1.26.0
+kworker2         Ready    <none>          7m51s   v1.26.0
+kworker3         Ready    <none>          7m51s   v1.26.0
 ```
 
 # Deploy Container
@@ -189,7 +201,7 @@ host machine create a deployment and expose the service.
 
 ```sh
 kubectl create deployment nginx-deployment --image=nginx
-kubectl expose deployment nginx-deployment --port=8080 --target-port=80
+kubectl expose deployment nginx-deployment --port=80 --target-port=80
 ```
 
 Check if the pods are up and to get its name

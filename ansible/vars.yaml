@@ -1,4 +1,7 @@
-K8S_VERSION: 1.25.4-00
+# Must unset the hold apt has on the version if you want to change it
+K8S_VERSION: 1.26.0-00
+
+# Simply use the default port
 K8S_API_SERVER_PORT: 6443
 
 VIRTUAL_IP: "172.16.16.100"
@@ -18,5 +21,3 @@ POD_CIDR_CALICO: 192.168.0.0/16
 #     openssl rand -base64 32
 PASSWORD_KUBEADMIN: "kubeadmin"
 PASSWORD_KEEPALIVED: "fW/19P0JzwNqIveyXfnhLXswVBUSFF4d3oMyVSi3g/U="
-
-OS: "Debian" # Debian / Ubuntu

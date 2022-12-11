@@ -13,6 +13,7 @@
           - apt-transport-https
           - gpg
           - curl
+          - ca-certificates
         state: present
         update_cache: true
 

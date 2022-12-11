@@ -67,7 +67,7 @@
   become: yes
   tasks:
     - debug: msg="{{ hostvars['control1'].cert_command }}"
-    - debug: var="{{ ansible_eth1.ipv4.address }}"
+    - debug: msg="{{ ansible_eth1.ipv4.address }}"
 
     - name: join control-plane
       shell: "{{ hostvars['control1'].join_command }} --control-plane --certificate-key={{ hostvars['control1'].cert_command }} --apiserver-advertise-address={{ ansible_eth1.ipv4.address|default(ansible_all_ipv4_addresses[0]) }} >> node_joined.txt"

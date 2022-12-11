@@ -40,39 +40,42 @@
       become: yes
       shell: modprobe overlay && modprobe br_netfilter && sysctl --system
 
+    - name: For releases older than Debian 12 and Ubuntu 22.04
+      become: yes
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: 0755
+
+    - name: Apt-key for containerd.io [1/2]
+      become: yes
+      shell: |
+        curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+    - name: Add containerd.io repository [2/2]
+      become: yes
+      shell: |
+        echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null    
+
     - name: Install container runtime (CRI)
       apt:
         name:
-          - containerd
+          - containerd.io
         state: present
         update_cache: true
 
-    - name: Tell Ubuntu to use systemd
-      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: Tell containerd to use systemd
       shell: |
         mkdir -p /etc/containerd && \
         containerd config default > /etc/containerd/config.toml && \
         sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 
-    - name: Tell Debian to use systemd
-      when: ansible_facts['distribution'] == "Debian"
-      shell: |
-        mkdir -p /etc/containerd
-        containerd config default > /etc/containerd/config.toml
-        sed -i 's/\[plugins\.\"io\.containerd\.grpc\.v1\.cri\"\.containerd\.runtimes\.runc\.options\]/\[plugins\.\"io\.containerd\.grpc\.v1\.cri\"\.containerd\.runtimes\.runc\.options\]\\n\\t\\tSystemdCgroup \= true/g' /etc/containerd/config.toml
-
-    - name: containerd services
+    - name: containerd service
       ansible.builtin.systemd:
         state: restarted
         name: containerd
-
-#    - name: For releases older than Debian 12 and Ubuntu 22.04
-#      become: yes
-#      become_user: vagrant
-#      file:
-#        path: /etc/apt/keyrings
-#        state: directory
-#        mode: 0755
 
     - name: add Kubernetes apt-key
       apt_key:
@@ -102,6 +105,13 @@
         state: present
         update_cache: true
 
+    - name: Hold versions
+      shell: apt-mark hold kubelet={{ K8S_VERSION }} kubeadm={{ K8S_VERSION }}
+
+
+- hosts: control_plane
+  become: yes
+  tasks:
     - name: install kubectl
       apt:
         name: kubectl={{ K8S_VERSION }}
@@ -109,10 +119,7 @@
         update_cache: true
 
     - name: Hold versions
-      shell: apt-mark hold kubelet={{ K8S_VERSION }} kubeadm={{ K8S_VERSION }} kubectl={{ K8S_VERSION }}
+      shell: apt-mark hold kubectl={{ K8S_VERSION }}
 
-#- hosts: control_plane
-#  become: yes
-#  tasks:
 #    - name: Pre-download images
 #      shell: kubeadm config images pull

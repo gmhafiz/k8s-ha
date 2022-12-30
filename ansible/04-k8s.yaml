@@ -117,6 +117,7 @@
         name: kubectl={{ K8S_VERSION }}
         state: present
         update_cache: true
+        allow_downgrade: true
 
     - name: Hold versions
       shell: apt-mark hold kubectl={{ K8S_VERSION }}

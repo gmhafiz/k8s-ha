@@ -1,6 +1,6 @@
 # Introduction
 
-Create a highly available kubernetes cluster v1.26 using `kubeadm`, `libvirt`,  `ansible`, `containerd`, `calico`, VMs deployed by vagrant with 1 virtual IP, 2 load balancers, 3 control planes and 3 worker nodes on Debian Bullseye 11. Heavily adapted from https://youtu.be/c1SCdv2hYDc 
+Create a highly available kubernetes cluster v1.27 using `kubeadm`, `libvirt`,  `ansible`, `containerd`, `calico`, VMs deployed by vagrant with 1 virtual IP, 2 load balancers, 3 control planes and 3 worker nodes on Debian Bullseye 11. Heavily adapted from https://youtu.be/c1SCdv2hYDc 
 
 # In Short
 
@@ -183,12 +183,12 @@ Cluster is ready when all status is `Ready`
 ```
 $ kubectl get no
 NAME             STATUS   ROLES           AGE     VERSION
-kcontrolplane1   Ready    control-plane   11m     v1.26.0
-kcontrolplane2   Ready    control-plane   39s     v1.26.0
-kcontrolplane3   Ready    control-plane   8m50s   v1.26.0
-kworker1         Ready    <none>          7m51s   v1.26.0
-kworker2         Ready    <none>          7m51s   v1.26.0
-kworker3         Ready    <none>          7m51s   v1.26.0
+kcontrolplane1   Ready    control-plane   11m     v1.27.1
+kcontrolplane2   Ready    control-plane   39s     v1.27.1
+kcontrolplane3   Ready    control-plane   8m50s   v1.27.1
+kworker1         Ready    <none>          7m51s   v1.27.1
+kworker2         Ready    <none>          7m51s   v1.27.1
+kworker3         Ready    <none>          7m51s   v1.27.1
 ```
 
 # Deploy Container

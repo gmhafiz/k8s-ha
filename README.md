@@ -1,9 +1,6 @@
 # Introduction
 
-Create a highly available kubernetes cluster v1.26 using `kubeadm`, `libvirt`,  `ansible`,
-`containerd`, `calico`, VMs deployed by vagrant with 1 virtual IP, 2 load balancers, 3 
-control planes and 3 worker nodes on Debian Bullseye 11. Heavily adapted from 
-https://youtu.be/c1SCdv2hYDc 
+Create a highly available kubernetes cluster v1.26 using `kubeadm`, `libvirt`,  `ansible`, `containerd`, `calico`, VMs deployed by vagrant with 1 virtual IP, 2 load balancers, 3 control planes and 3 worker nodes on Debian Bullseye 11. Heavily adapted from https://youtu.be/c1SCdv2hYDc 
 
 # In Short
 
@@ -204,7 +201,7 @@ kubectl create deployment nginx-deployment --image=nginx
 kubectl expose deployment nginx-deployment --port=80 --target-port=80
 ```
 
-Check if the pods are up and to get its name
+Check if the pods are up
 
 ```sh
 kubectl get po -o wide

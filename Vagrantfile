@@ -4,8 +4,8 @@
 # ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 # ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 
-VAGRANT_BOX               = "debian/bullseye64"
-VAGRANT_BOX_VERSION       = "11.20221219.1"
+VAGRANT_BOX               = "debian/bookworm64"
+VAGRANT_BOX_VERSION       = "12.20230615.1"
 # VAGRANT_BOX               = "generic/ubuntu2004"
 # VAGRANT_BOX_VERSION       = "3.3.0"
 # VAGRANT_BOX               = "generic/ubuntu2204" # doesn't seem to work

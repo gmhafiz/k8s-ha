@@ -1,8 +1,8 @@
 # Introduction
 
-Create a highly available kubernetes cluster v1.26 using `kubeadm`, `libvirt`,  `ansible`,
+Create a highly available kubernetes cluster v1.27 using `kubeadm`, `libvirt`,  `ansible`,
 `containerd`, `calico`, VMs deployed by vagrant with 1 virtual IP, 2 load balancers, 3 
-control planes and 3 worker nodes on Debian Bullseye 11. Heavily adapted from 
+control planes and 3 worker nodes on Debian Bookworm 12. Heavily adapted from 
 https://youtu.be/c1SCdv2hYDc 
 
 # In Short
@@ -21,14 +21,14 @@ make cluster
 
 | Role          | Host Name      | IP            | OS                 | RAM   | CPU |
 |---------------|----------------|---------------|--------------------|-------|-----|
-| Load Balancer | loadbalancer1  | 172.16.16.51  | Debian Bullseye 11 | 512MB | 1   |
-| Load Balancer | loadbalancer1  | 172.16.16.52  | Debian Bullseye 11 | 512MB | 1   |
-| Control Plane | kcontrolplane1 | 172.16.16.101 | Debian Bullseye 11 | 2G    | 2   |
-| Control Plane | kcontrolplane2 | 172.16.16.102 | Debian Bullseye 11 | 2G    | 2   |
-| Control Plane | kcontrolplane3 | 172.16.16.103 | Debian Bullseye 11 | 2G    | 2   |
-| Worker        | kworker1       | 172.16.16.201 | Debian Bullseye 11 | 2G    | 2   |
-| Worker        | kworker2       | 172.16.16.202 | Debian Bullseye 11 | 2G    | 2   |
-| Worker        | kworker3       | 172.16.16.203 | Debian Bullseye 11 | 2G    | 2   |
+| Load Balancer | loadbalancer1  | 172.16.16.51  | Debian Bookworm 12 | 512MB | 1   |
+| Load Balancer | loadbalancer2  | 172.16.16.52  | Debian Bookworm 12 | 512MB | 1   |
+| Control Plane | kcontrolplane1 | 172.16.16.101 | Debian Bookworm 12 | 2G    | 2   |
+| Control Plane | kcontrolplane2 | 172.16.16.102 | Debian Bookworm 12 | 2G    | 2   |
+| Control Plane | kcontrolplane3 | 172.16.16.103 | Debian Bookworm 12 | 2G    | 2   |
+| Worker        | kworker1       | 172.16.16.201 | Debian Bookworm 12 | 2G    | 2   |
+| Worker        | kworker2       | 172.16.16.202 | Debian Bookworm 12 | 2G    | 2   |
+| Worker        | kworker3       | 172.16.16.203 | Debian Bookworm 12 | 2G    | 2   |
 
 
 Host Machine Requirements
@@ -186,12 +186,12 @@ Cluster is ready when all status is `Ready`
 ```
 $ kubectl get no
 NAME             STATUS   ROLES           AGE     VERSION
-kcontrolplane1   Ready    control-plane   11m     v1.26.0
-kcontrolplane2   Ready    control-plane   39s     v1.26.0
-kcontrolplane3   Ready    control-plane   8m50s   v1.26.0
-kworker1         Ready    <none>          7m51s   v1.26.0
-kworker2         Ready    <none>          7m51s   v1.26.0
-kworker3         Ready    <none>          7m51s   v1.26.0
+kcontrolplane1   Ready    control-plane   11m     v1.27.3
+kcontrolplane2   Ready    control-plane   39s     v1.27.3
+kcontrolplane3   Ready    control-plane   8m50s   v1.27.3
+kworker1         Ready    <none>          7m51s   v1.27.3
+kworker2         Ready    <none>          7m51s   v1.27.3
+kworker3         Ready    <none>          7m51s   v1.27.3
 ```
 
 # Deploy Container
@@ -236,6 +236,23 @@ Access http://localhost:8080 in the browser.
 
 ---
 
+# Applications
+
+Blog post showing deployment of three applications, a database, an api, a frontend https://gmhafiz.com/blog/deploy-applications-in-kubernetes
+
+Repositories at 
+ - https://github.com/gmhafiz/k8s-devops
+ - https://github.com/gmhafiz/k8s-api
+ - https://github.com/gmhafiz/k8s-web
+
+# Shutdown
+
+To shut down (but not remove) the nodes:
+
+```sh
+vagrant halt
+```
+
 # TODO
 
  - [ ] Adjust disk space on VMs
@@ -243,9 +260,9 @@ Access http://localhost:8080 in the browser.
  - [x] High Available (HA) cluster
  - [ ] Backup and restore etcd data
  - [ ] Deploy 
-   - [ ] SPA frontend
-   - [ ] api backend
-   - [ ] one DB
+   - [x] SPA frontend
+   - [x] api backend
+   - [x] one DB
  - [ ] Ingress controller
 
 

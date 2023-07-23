@@ -1,7 +1,8 @@
 # Must unset the hold apt has on the version if you want to change it
-K8S_VERSION: 1.26.0-00
-#K8S_VERSION: 1.25.5-00
-#K8S_VERSION: 1.24.9-00
+K8S_VERSION: 1.27.3-00
+#K8S_VERSION: 1.26.6-00
+#K8S_VERSION: 1.25.11-00
+#K8S_VERSION: 1.24.16-00
 
 # Simply use the default port
 K8S_API_SERVER_PORT: 6443
@@ -20,6 +21,6 @@ POD_CIDR_FLANNEL: 10.244.0.0/16
 POD_CIDR_CALICO: 192.168.0.0/16
 
 # Generate random string with:
-#     openssl rand -base64 32
+#     openssl rand -base64 24
 PASSWORD_KUBEADMIN: "kubeadmin"
 PASSWORD_KEEPALIVED: "fW/19P0JzwNqIveyXfnhLXswVBUSFF4d3oMyVSi3g/U="

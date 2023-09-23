@@ -3,7 +3,7 @@
   become: yes
   tasks:
     - name: initialise the cluster
-      shell: kubeadm init --control-plane-endpoint="{{ VIRTUAL_IP }}:{{ K8S_API_SERVER_PORT }}" --upload-certs --apiserver-advertise-address=172.16.16.101 --pod-network-cidr=192.168.0.0/16
+      shell: kubeadm init --control-plane-endpoint="{{ VIRTUAL_IP }}:{{ K8S_API_SERVER_PORT }}" --upload-certs --apiserver-advertise-address={{ IP_HOST_CP1 }} --pod-network-cidr=192.168.0.0/16
       register: cluster_initialized
 
     - debug: msg="{{ cluster_initialized.stdout }}"
@@ -58,7 +58,7 @@
 
     - name: install Pod network (CNI)
       become: yes
-      shell: kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/calico.yaml
+      shell: kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://raw.githubusercontent.com/projectcalico/calico/{{ VERSION_CALICO }}/manifests/calico.yaml
       args:
         chdir: $HOME
         creates: pod_network_setup.txt

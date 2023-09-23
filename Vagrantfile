@@ -5,7 +5,7 @@
 # ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 
 VAGRANT_BOX               = "debian/bookworm64"
-VAGRANT_BOX_VERSION       = "12.20230615.1"
+VAGRANT_BOX_VERSION       = "12.20230723.1"
 # VAGRANT_BOX               = "generic/ubuntu2004"
 # VAGRANT_BOX_VERSION       = "3.3.0"
 # VAGRANT_BOX               = "generic/ubuntu2204" # doesn't seem to work

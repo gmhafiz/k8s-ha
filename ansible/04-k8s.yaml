@@ -57,7 +57,7 @@
       shell: |
         echo \
           "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null    
+          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
     - name: Install container runtime (CRI)
       apt:
@@ -78,15 +78,14 @@
         name: containerd
 
     - name: add Kubernetes apt-key
-      apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        state: present
+      become: yes
+      shell: |
+        echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ K8S_VERSION | regex_search('(\d\.\d+)') }}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
     - name: add Kubernetes' APT repository
-      apt_repository:
-        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
-        state: present
-        filename: 'kubernetes'
+      become: yes
+      shell: |
+        curl -fsSL https://pkgs.k8s.io/core:/stable:/v{{ K8S_VERSION | regex_search('(\d\.\d+)') }}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
     - name: update repo
       apt: update_cache=yes force_apt_get=yes cache_valid_time=3600

@@ -1,6 +1,6 @@
 # Introduction
 
-Create a highly available kubernetes cluster v1.27 using `kubeadm`, `libvirt`,  `ansible`,
+Create a highly available kubernetes cluster v1.28 using `kubeadm`, `libvirt`,  `ansible`,
 `containerd`, `calico`, VMs deployed by vagrant with 1 virtual IP, 2 load balancers, 3 
 control planes and 3 worker nodes on Debian Bookworm 12. Heavily adapted from 
 https://youtu.be/c1SCdv2hYDc 
@@ -21,15 +21,14 @@ make cluster
 
 | Role          | Host Name      | IP            | OS                 | RAM   | CPU |
 |---------------|----------------|---------------|--------------------|-------|-----|
-| Load Balancer | loadbalancer1  | 172.16.16.51  | Debian Bullseye 11 | 512MB | 1   |
-| Load Balancer | loadbalancer1  | 172.16.16.52  | Debian Bullseye 11 | 512MB | 1   |
-| Control Plane | kcontrolplane1 | 172.16.16.101 | Debian Bullseye 11 | 2G    | 2   |
-| Control Plane | kcontrolplane2 | 172.16.16.102 | Debian Bullseye 11 | 2G    | 2   |
-| Control Plane | kcontrolplane3 | 172.16.16.103 | Debian Bullseye 11 | 2G    | 2   |
-| Worker        | kworker1       | 172.16.16.201 | Debian Bullseye 11 | 2G    | 2   |
-| Worker        | kworker2       | 172.16.16.202 | Debian Bullseye 11 | 2G    | 2   |
-| Worker        | kworker3       | 172.16.16.203 | Debian Bullseye 11 | 2G    | 2   |
-
+| Load Balancer | loadbalancer1  | 172.16.16.51  | Debian Bookworm 12 | 512MB | 1   |
+| Load Balancer | loadbalancer1  | 172.16.16.52  | Debian Bookworm 12 | 512MB | 1   |
+| Control Plane | kcontrolplane1 | 172.16.16.101 | Debian Bookworm 12 | 2G    | 2   |
+| Control Plane | kcontrolplane2 | 172.16.16.102 | Debian Bookworm 12 | 2G    | 2   |
+| Control Plane | kcontrolplane3 | 172.16.16.103 | Debian Bookworm 12 | 2G    | 2   |
+| Worker        | kworker1       | 172.16.16.201 | Debian Bookworm 12 | 2G    | 2   |
+| Worker        | kworker2       | 172.16.16.202 | Debian Bookworm 12 | 2G    | 2   |
+| Worker        | kworker3       | 172.16.16.203 | Debian Bookworm 12 | 2G    | 2   |
 
 Host Machine Requirements
 
@@ -186,22 +185,22 @@ Cluster is ready when all status is `Ready`
 ```
 $ kubectl get no
 NAME             STATUS   ROLES           AGE     VERSION
-kcontrolplane1   Ready    control-plane   11m     v1.27.3
-kcontrolplane2   Ready    control-plane   39s     v1.27.3
-kcontrolplane3   Ready    control-plane   8m50s   v1.27.3
-kworker1         Ready    <none>          7m51s   v1.27.3
-kworker2         Ready    <none>          7m51s   v1.27.3
-kworker3         Ready    <none>          7m51s   v1.27.3
+kcontrolplane1   Ready    control-plane   11m     v1.28.2
+kcontrolplane2   Ready    control-plane   39s     v1.28.2
+kcontrolplane3   Ready    control-plane   8m50s   v1.28.2
+kworker1         Ready    <none>          7m51s   v1.28.2
+kworker2         Ready    <none>          7m51s   v1.28.2
+kworker3         Ready    <none>          7m51s   v1.28.2
 ```
 
 # Deploy Container
 
 To test that the cluster is working, let us try to deploy an nginx server. On the 
-host machine create a deployment and expose the service.
+host machine create a deployment and expose the service. Chainguard version of nginx exposes port 8080 by default.
 
 ```sh
-kubectl create deployment nginx-deployment --image=nginx
-kubectl expose deployment nginx-deployment --port=80 --target-port=80
+kubectl create deployment nginx-deployment --image=cgr.dev/chainguard/nginx:latest
+kubectl expose deployment nginx-deployment --port=8080 --target-port=80
 ```
 
 Check if the pods are up and to get its name
@@ -219,20 +218,30 @@ kubectl get svc
 The way we are accessing the container is by doing a port forward. In production,
 you would want to look at ingress like metallb or nginx. We will explore that 
 option in part three. For now, a port forward from the deployment to local 
-suffice. We are doing a port forward from 80 to 8080 of that service
+suffice. We are doing a port forward from 8080 of that service to 8000 to our local port.
 
 ```sh
-kubectl port-forward deployment/nginx-deployment 8080:80
+kubectl port-forward deployment/nginx-deployment 8000:8080
 ```
 
 You will see this output
 
 ```
-Forwarding from 127.0.0.1:8080 -> 80
-Forwarding from [::1]:8080 -> 80
+Forwarding from 127.0.0.1:8000 -> 8080
+Forwarding from [::1]:8000 -> 8080
 ```
 
-Access http://localhost:8080 in the browser.
+Access http://localhost:8000 in the browser.
+
+
+# Delete
+
+To remove nginx deployment and service, firstly, we stop the port forward with `Ctrl+C`. Then
+
+```sh
+kubectl delete svc nginx-deployment
+kubectl delete deploy nginx-deployment
+```
 
 ---
 

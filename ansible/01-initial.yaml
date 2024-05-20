@@ -8,7 +8,7 @@
     - name: set up authorized keys for the user
       authorized_key: user=kubeadmin key="{{item}}"
       with_file:
-        - ~/.ssh/id_rsa.pub
+        - ~/.ssh/id_ed25519.pub
 
 
 - hosts: control_plane

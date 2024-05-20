@@ -1,6 +1,6 @@
 # Introduction
 
-Create a highly available kubernetes cluster v1.28 using `kubeadm`, `libvirt`,  `ansible`,
+Create a highly available kubernetes cluster v1.30 using `kubeadm`, `libvirt`,  `ansible`,
 `containerd`, `calico`, VMs deployed by vagrant with 1 virtual IP, 2 load balancers, 3 
 control planes and 3 worker nodes on Debian Bookworm 12. Heavily adapted from 
 https://youtu.be/c1SCdv2hYDc 
@@ -185,12 +185,12 @@ Cluster is ready when all status is `Ready`
 ```
 $ kubectl get no
 NAME             STATUS   ROLES           AGE     VERSION
-kcontrolplane1   Ready    control-plane   11m     v1.28.2
-kcontrolplane2   Ready    control-plane   39s     v1.28.2
-kcontrolplane3   Ready    control-plane   8m50s   v1.28.2
-kworker1         Ready    <none>          7m51s   v1.28.2
-kworker2         Ready    <none>          7m51s   v1.28.2
-kworker3         Ready    <none>          7m51s   v1.28.2
+kcontrolplane1   Ready    control-plane   11m     v1.30.1
+kcontrolplane2   Ready    control-plane   39s     v1.30.1
+kcontrolplane3   Ready    control-plane   8m50s   v1.30.1
+kworker1         Ready    <none>          7m51s   v1.30.1
+kworker2         Ready    <none>          7m51s   v1.30.1
+kworker3         Ready    <none>          7m51s   v1.30.1
 ```
 
 # Deploy Container
@@ -251,11 +251,15 @@ kubectl delete deploy nginx-deployment
  - [x] Multi control plane kubernetes cluster
  - [x] High Available (HA) cluster
  - [ ] Backup and restore etcd data
- - [ ] Deploy 
-   - [ ] SPA frontend
-   - [ ] api backend
-   - [ ] one DB
+ - [x] Deploy 
+   - [x] SPA frontend
+   - [x] api backend
+   - [x] one DB
  - [ ] Ingress controller
+
+# Blog Post
+
+This repository accompanies the blog post at https://www.gmhafiz.com/blog/highly-available-kubernetes-cluster/
 
 
 # Reference

@@ -8,8 +8,7 @@ install:
 	vagrant plugin install vagrant-libvirt vagrant-disksize vagrant-vbguest && \
 	sudo apt install software-properties-common && \
     sudo apt-add-repository --yes --update ppa:ansible/ansible && \
-    sudo apt install ansible \
-    sudo apt install kubectl
+    sudo apt install ansible
 
 # Provision Virtual Machines
 up:

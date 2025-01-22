@@ -13,6 +13,9 @@ If you do not want to read the rest, tldr:
 git clone https://github.com/gmhafiz/k8s-ha
 cd k8s-ha
 make install
+ssh-keygen -t rsa -b 4096 -f ansible/vagrant
+chmod 600 ansible/vagrant
+chmod 644 ansible/vagrant.pub
 make up
 make cluster
 ```
@@ -67,14 +70,7 @@ Install ansible
 ```sh
 sudo apt install software-properties-common
 sudo apt-add-repository --yes --update ppa:ansible/ansible
-sudo apt install ansible
-```
-
-Install kubectl
-
-```sh
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+sudo apt install ansible python3-passlib
 ```
 
 To gain access with ssh into the VMs, we copy a public key at initialization. Either
@@ -154,20 +150,16 @@ ansible-playbook -u root --key-file "vagrant" XX-kubeadm_reset.yaml
 
 If everything is successful, check if it is working from the host machine. The 
 final playbook copies `/etc/kubernetes/admin.conf` into your `~/.kube/config` to 
-allow you to manage from the host. But to use `kubectl` command, we need to
-install it on local machine:
+allow you to manage from the host.
+
+Install kubectl first:
 
 ```sh
-sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl
-sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo apt-get update
-sudo apt-get install -y kubectl
-sudo apt-mark hold kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 ```
 
-then,
+The following commands show information about cluster and node status.
 
 ```sh
 kubectl cluster-info
